@@ -144,16 +144,17 @@ void CchessDlg::OnPaint()
 	}
 	else
 	{
-		// 여기에 사각형을 그리는 코드를 추가한다.
 		CPaintDC dc(this); // device context for painting
 
 		int x = 10;
 		int y = 10;
+		bool draw = true;
 
 		for (int i = 0; i < 8; ++i) {
 			if (i > 0) {
 				y += 40;
 				x = 10;
+				draw = !draw;
 			}
 			for (int j = 1; j < 9; ++j) {
 				dc.MoveTo(x, y);
@@ -162,7 +163,13 @@ void CchessDlg::OnPaint()
 				dc.LineTo(x, y + 40);
 				dc.LineTo(x, y);
 				m_spaceNum[(i*8)+j - 1] = CSpace(x, y, (i*8)+j);
+
+				if (draw) {
+					dc.FillSolidRect(CRect(x, y, x + 40, y + 40), RGB(150, 150, 150));
+				}
+
 				x += 40;
+				draw = !draw;
 			}
 		}
 		CDialogEx::OnPaint();
