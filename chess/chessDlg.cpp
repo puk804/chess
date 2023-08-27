@@ -65,6 +65,8 @@ BEGIN_MESSAGE_MAP(CchessDlg, CDialogEx)
 	ON_WM_SYSCOMMAND()
 	ON_WM_PAINT()
 	ON_WM_QUERYDRAGICON()
+	ON_BN_CLICKED(IDC_BUTTON1, &CchessDlg::OnBnClickedButton1)
+	ON_WM_LBUTTONDOWN()
 END_MESSAGE_MAP()
 
 
@@ -142,6 +144,27 @@ void CchessDlg::OnPaint()
 	}
 	else
 	{
+		// 여기에 사각형을 그리는 코드를 추가한다.
+		CPaintDC dc(this); // device context for painting
+
+		int x = 10;
+		int y = 10;
+
+		for (int i = 1; i < 9; ++i) {
+			if (i > 0) {
+				y += 40;
+				x = 10;
+			}
+			for (int j = 1; j < 9; ++j) {
+				dc.MoveTo(x, y);
+				dc.LineTo(x + 40, y);
+				dc.LineTo(x + 40, y + 40);
+				dc.LineTo(x, y + 40);
+				dc.LineTo(x, y);
+				m_spaceNum[i*j - 1] = CSpace(x, y, i*j);
+				x += 40;
+			}
+		}
 		CDialogEx::OnPaint();
 	}
 }
@@ -153,3 +176,18 @@ HCURSOR CchessDlg::OnQueryDragIcon()
 	return static_cast<HCURSOR>(m_hIcon);
 }
 
+
+
+void CchessDlg::OnBnClickedButton1()
+{
+	// TODO: 여기에 컨트롤 알림 처리기 코드를 추가합니다.
+}
+
+
+void CchessDlg::OnLButtonDown(UINT nFlags, CPoint point)
+{
+	if ((point.x <= 330 && point.x >= 10) && (point.y <= 330 && point.x >= 10)) {
+
+	}
+	CDialogEx::OnLButtonDown(nFlags, point);
+}

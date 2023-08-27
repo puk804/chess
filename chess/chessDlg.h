@@ -3,7 +3,7 @@
 //
 
 #pragma once
-
+#include "CSpace.h"
 
 // CchessDlg 대화 상자
 class CchessDlg : public CDialogEx
@@ -31,4 +31,11 @@ protected:
 	afx_msg void OnPaint();
 	afx_msg HCURSOR OnQueryDragIcon();
 	DECLARE_MESSAGE_MAP()
+public:
+	afx_msg void OnBnClickedButton1();
+	afx_msg void OnLButtonDown(UINT nFlags, CPoint point);
+
+
+public:
+	CSpace m_spaceNum[64];
 };
