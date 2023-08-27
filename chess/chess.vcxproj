@@ -189,6 +189,7 @@
   <ItemGroup>
     <ClInclude Include="chess.h" />
     <ClInclude Include="chessDlg.h" />
+    <ClInclude Include="ChessTypeDef.h" />
     <ClInclude Include="CSpace.h" />
     <ClInclude Include="framework.h" />
     <ClInclude Include="pch.h" />
