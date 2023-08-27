@@ -193,8 +193,9 @@ void CchessDlg::OnBnClickedButton1()
 
 void CchessDlg::OnLButtonDown(UINT nFlags, CPoint point)
 {
+	int index = -1;
 	if ((point.x <= 330 && point.x >= 10) && (point.y <= 330 && point.x >= 10)) {
-
+		index = CSpace().getSpaceIndex(point.x, point.y);
 	}
 	CDialogEx::OnLButtonDown(nFlags, point);
 }

@@ -8,6 +8,10 @@ public:
 	CSpace(int x, int y, int spaceNum);
 
 public:
+	int getSpaceIndex(int x, int y);
+	int changeCoorToNum(int coor, bool isX);
+
+public:
 	int m_xStart;
 	int m_yStart;
 	int m_xEnd;
