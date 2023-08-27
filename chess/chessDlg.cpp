@@ -150,7 +150,7 @@ void CchessDlg::OnPaint()
 		int x = 10;
 		int y = 10;
 
-		for (int i = 1; i < 9; ++i) {
+		for (int i = 0; i < 8; ++i) {
 			if (i > 0) {
 				y += 40;
 				x = 10;
@@ -161,7 +161,7 @@ void CchessDlg::OnPaint()
 				dc.LineTo(x + 40, y + 40);
 				dc.LineTo(x, y + 40);
 				dc.LineTo(x, y);
-				m_spaceNum[i*j - 1] = CSpace(x, y, i*j);
+				m_spaceNum[(i*8)+j - 1] = CSpace(x, y, (i*8)+j);
 				x += 40;
 			}
 		}

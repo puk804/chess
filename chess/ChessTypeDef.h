@@ -13,6 +13,6 @@ enum class Unit{
 
 enum class Team {
 	None = 0,
-	Red = 1,
-	Blue = 2
+	White = 1,
+	Black = 2
 };
