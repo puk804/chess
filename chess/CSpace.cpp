@@ -13,6 +13,7 @@ CSpace::CSpace(int x, int y, int spaceNum) {
 	m_spaceNum = spaceNum;
 
 	if (y == 10 || y == 290) {
+		m_isValid = true;
 		y == 10 ? m_team = Team::White : m_team = Team::Black;
 		if (x == 10 || x == 290) {
 			m_unit = Unit::Rook;
@@ -31,53 +32,79 @@ CSpace::CSpace(int x, int y, int spaceNum) {
 		}
 	}
 	else if (y == 50 || y == 250) {
+		m_isValid = true;
 		y == 50 ? m_team = Team::White : m_team = Team::Black;
 		m_unit = Unit::Pawn;
 	}
 	else {
+		m_isValid = false;
 		m_team = Team::None;
 		m_unit = Unit::None;
 	}
 }
 
-int CSpace::getSpaceIndex(int x, int y) {
-	int xNum = changeCoorToNum(x, true);
-	int yNum = changeCoorToNum(y, false);
-
-	return xNum + yNum;
-
+void CSpace::unitClear(CSpace& space) {
+	space.m_isValid = false;
+	space.m_team = Team::None;
+	space.m_unit = Unit::None;
 }
 
-int CSpace::changeCoorToNum(int coor, bool isX) {
-	int retVal = -1;
-	if (coor >= 10 && coor < 50) {
-		retVal = 0;
+void CSpace::getSpaceIndex(int& x, int& y) {
+	changeCoorToNum(x);
+	changeCoorToNum(y);
+}
+
+void CSpace::changeCoorToNum(int& coor) {
+	int start = 10;
+	for (int i = 0; i < 8; i++) {
+		if (coor >= start && coor < start+40) {
+			coor = i;
+			return;
+		}
+		start += 40;
 	}
-	else if (coor >= 50 && coor < 90) {
-		retVal = 1;
+}
+
+bool CSpace::isValidClick(CSpace space, bool firstClick) {
+	bool retVal = false;
+	if (firstClick && space.m_isValid) {	// 첫번째 클릭 칸에 기물이 있을 때
+
+		retVal = true;
 	}
-	else if (coor >= 90 && coor < 130) {
-		retVal = 2;
-	}
-	else if (coor >= 130 && coor < 170) {
-		retVal = 3;
-	}
-	else if (coor >= 170 && coor < 210) {
-		retVal = 4;
-	}
-	else if (coor >= 210 && coor < 250) {
-		retVal = 5;
-	}
-	else if (coor >= 250 && coor < 290) {
-		retVal = 6;
-	}
-	else if (coor >= 290 && coor < 330) {
-		retVal = 7;
+	else if (!firstClick && CSpace::canMove(space)) {		// 두번째 클릭인 경우 기물이 움직일 수 있는 칸일 때
+		
+		retVal = true;
 	}
 
-	if (!isX) {
-		retVal *= 8;
+	return retVal;
+}
+
+bool CSpace::canMove(CSpace space) {
+	bool retVal = false;
+
+	switch (space.m_unit) {
+		case Unit::Pawn:
+
+			break;
+		case Unit::Rook:
+
+			break;
+		case Unit::Knight:
+
+			break;
+		case Unit::Bishop:
+
+			break;
+		case Unit::Queen:
+
+			break;
+		case Unit::King:
+
+			break;
+		default:
+			retVal = false;
+			break;
 	}
-	
+
 	return retVal;
 }

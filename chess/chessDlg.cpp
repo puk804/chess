@@ -103,6 +103,8 @@ BOOL CchessDlg::OnInitDialog()
 
 	// TODO: 여기에 추가 초기화 작업을 추가합니다.
 
+	m_isFirstClick = false;
+
 	return TRUE;  // 포커스를 컨트롤에 설정하지 않으면 TRUE를 반환합니다.
 }
 
@@ -148,6 +150,7 @@ void CchessDlg::OnPaint()
 
 		int x = 10;
 		int y = 10;
+		int count = 1;
 		bool draw = true;
 
 		for (int i = 0; i < 8; ++i) {
@@ -162,13 +165,15 @@ void CchessDlg::OnPaint()
 				dc.LineTo(x + 40, y + 40);
 				dc.LineTo(x, y + 40);
 				dc.LineTo(x, y);
-				m_spaceNum[(i*8)+j - 1] = CSpace(x, y, (i*8)+j);
+				m_spaceNum[i][j] = CSpace(x, y, count);
+
 
 				if (draw) {
 					dc.FillSolidRect(CRect(x, y, x + 40, y + 40), RGB(150, 150, 150));
 				}
 
 				x += 40;
+				count++;
 				draw = !draw;
 			}
 		}
@@ -193,9 +198,16 @@ void CchessDlg::OnBnClickedButton1()
 
 void CchessDlg::OnLButtonDown(UINT nFlags, CPoint point)
 {
-	int index = -1;
-	if ((point.x <= 330 && point.x >= 10) && (point.y <= 330 && point.x >= 10)) {
-		index = CSpace().getSpaceIndex(point.x, point.y);
+	if ((point.x < 330 && point.x >= 10) && (point.y < 330 && point.x >= 10)) {
+		int x = point.x;
+		int y = point.y;
+		CSpace().getSpaceIndex(x, y);
+
+		if (CSpace().isValidClick(m_spaceNum[x][y], m_isFirstClick)) {	// 유효한 클릭인지 체크
+
+		}
+
+
 	}
 	CDialogEx::OnLButtonDown(nFlags, point);
 }

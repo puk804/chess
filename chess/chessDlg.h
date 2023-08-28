@@ -37,5 +37,6 @@ public:
 
 
 public:
-	CSpace m_spaceNum[64];
+	CSpace m_spaceNum[8][8];
+	bool m_isFirstClick;
 };

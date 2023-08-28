@@ -6,10 +6,15 @@ class CSpace
 public:
 	CSpace();
 	CSpace(int x, int y, int spaceNum);
+	void unitClear(CSpace& space);
+
 
 public:
-	int getSpaceIndex(int x, int y);
-	int changeCoorToNum(int coor, bool isX);
+	void getSpaceIndex(int& x, int& y);
+	void changeCoorToNum(int& coor);
+	bool isValidClick(CSpace space, bool firstClick);
+	bool canMove(CSpace space);
+
 
 public:
 	int m_xStart;
@@ -18,7 +23,7 @@ public:
 	int m_yEnd;
 	int m_spaceNum;
 
-	bool isValid;
+	bool m_isValid;	// 해당 공간에 기물이 있는지
 	Team m_team;
 	Unit m_unit;
 };
