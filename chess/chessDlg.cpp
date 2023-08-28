@@ -104,7 +104,8 @@ BOOL CchessDlg::OnInitDialog()
 	// TODO: 여기에 추가 초기화 작업을 추가합니다.
 
 	m_isFirstClick = true;
-	m_clickedSpace = CSpace();
+	m_isFirstPaint = true;
+	m_prevSpace = CSpace();
 	m_turn = Team::White;
 
 	return TRUE;  // 포커스를 컨트롤에 설정하지 않으면 TRUE를 반환합니다.
@@ -150,37 +151,77 @@ void CchessDlg::OnPaint()
 	{
 		CPaintDC dc(this); // device context for painting
 
-		int x = 10;
-		int y = 10;
-		int count = 1;
-		bool draw = true;
+		if (m_isFirstPaint) {
+			int x = 10;
+			int y = 10;
+			int count = 1;
+			bool draw = true;
 
-		for (int i = 0; i < 8; ++i) {
-			if (i > 0) {
-				y += 40;
-				x = 10;
-				draw = !draw;
-			}
-			for (int j = 0; j < 8; ++j) {
-				dc.MoveTo(x, y);
-				dc.LineTo(x + 40, y);
-				dc.LineTo(x + 40, y + 40);
-				dc.LineTo(x, y + 40);
-				dc.LineTo(x, y);
-				m_spaceNum[i][j] = CSpace(i, j, x, y, count);
-
-
-				if (draw) {
-					dc.FillSolidRect(CRect(x, y, x + 40, y + 40), RGB(150, 150, 150));
+			for (int i = 0; i < 8; ++i) {
+				if (i > 0) {
+					y += 40;
+					x = 10;
+					draw = !draw;
 				}
+				for (int j = 0; j < 8; ++j) {
+					m_spaceNum[i][j] = CSpace(i, j, x, y, count);
+					if (draw) {
+						dc.FillSolidRect(CRect(x, y, x + 40, y + 40), RGB(150, 150, 150));
+						m_isWhiteSpace[i][j] = false;
+					}
+					else {
+						dc.FillSolidRect(CRect(x, y, x + 40, y + 40), RGB(255, 255, 255));
+						m_isWhiteSpace[i][j] = true;
+					}
+					dc.MoveTo(x, y);
+					dc.LineTo(x + 40, y);
+					dc.LineTo(x + 40, y + 40);
+					dc.LineTo(x, y + 40);
+					dc.LineTo(x, y);
 
-				x += 40;
-				count++;
-				draw = !draw;
+					x += 40;
+					count++;
+					draw = !draw;
+				}
+			}
+			m_isFirstPaint = false;
+			CDialogEx::OnPaint();
+		}
+		else {
+			if (!m_isFirstClick) {		// 첫번째 클릭했을 때 (아래에서 업데이트 후 paint 하는거라 반대임)
+
+				m_prevX = m_prevSpace.m_xStart;
+				m_prevY = m_prevSpace.m_yStart;
+				m_preSpaceNum = m_prevSpace.m_spaceNum;
+
+				dc.FillSolidRect(CRect(m_prevX, m_prevY, m_prevX + 40, m_prevY + 40), RGB(180, 0, 0));
+
+				dc.MoveTo(m_prevX, m_prevY);
+				dc.LineTo(m_prevX + 40, m_prevY);
+				dc.LineTo(m_prevX + 40, m_prevY + 40);
+				dc.LineTo(m_prevX, m_prevY + 40);
+				dc.LineTo(m_prevX, m_prevY);
+
+				CDialogEx::OnPaint();
+			}
+			else {
+				if (m_isWhiteSpace[m_prevSpace.m_rowIndex][m_prevSpace.m_colIndex]) {	// 흰색
+					dc.FillSolidRect(CRect(m_prevX, m_prevY, m_prevX + 40, m_prevY + 40), RGB(255, 255, 255));
+				}
+				else {																	// 회색
+					dc.FillSolidRect(CRect(m_prevX, m_prevY, m_prevX + 40, m_prevY + 40), RGB(150, 150, 150));
+				}
+				dc.MoveTo(m_prevX, m_prevY);
+				dc.LineTo(m_prevX + 40, m_prevY);
+				dc.LineTo(m_prevX + 40, m_prevY + 40);
+				dc.LineTo(m_prevX, m_prevY + 40);
+				dc.LineTo(m_prevX, m_prevY);
+
+				CDialogEx::OnPaint();
 			}
 		}
-		CDialogEx::OnPaint();
 	}
+	
 }
 
 // 사용자가 최소화된 창을 끄는 동안에 커서가 표시되도록 시스템에서
@@ -207,12 +248,12 @@ void CchessDlg::OnLButtonDown(UINT nFlags, CPoint point)
 
 		if (m_spaceNum[x][y].isValidClick(m_turn, m_isFirstClick)) {	// 유효한 클릭인지 체크
 			if (m_isFirstClick) {
-				m_clickedSpace = m_spaceNum[x][y];
+				m_prevSpace = m_spaceNum[x][y];
 			}
 			else {
-				if (m_spaceNum[x][y].m_team != m_clickedSpace.m_team) {	// 같은 팀이 있는 곳을 클릭 방지
-					int prevX = m_clickedSpace.m_rowIndex;
-					int prevY = m_clickedSpace.m_colIndex;
+				if (m_spaceNum[x][y].m_team != m_prevSpace.m_team) {	// 같은 팀이 있는 곳을 클릭 방지
+					int prevX = m_prevSpace.m_rowIndex;
+					int prevY = m_prevSpace.m_colIndex;
 
 					// todo: 복사생성자로 어떻게 안 될까?
 					m_spaceNum[x][y].m_isValid = m_spaceNum[prevX][prevY].m_isValid;
@@ -223,7 +264,7 @@ void CchessDlg::OnLButtonDown(UINT nFlags, CPoint point)
 					m_turn == Team::White ? m_turn = Team::Black : m_turn = Team::White;
 				}
 			}
-
+			Invalidate(false);		// 수정된 부분만 그리기 예약
 			m_isFirstClick = !m_isFirstClick;
 		}
 

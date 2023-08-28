@@ -38,7 +38,13 @@ public:
 
 public:
 	CSpace m_spaceNum[8][8];
-	CSpace m_clickedSpace;
+	CSpace m_prevSpace;
 	bool m_isFirstClick;
+	bool m_isFirstPaint;
+	bool m_isWhiteSpace[8][8];
 	Team m_turn;
+
+	int m_prevX;
+	int m_prevY;
+	int m_preSpaceNum;
 };

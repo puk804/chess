@@ -73,7 +73,11 @@ bool CSpace::isValidClick(const Team turn, bool firstClick) {
 	bool retVal = false;
 	int prevRowIndex = 0;
 	int prevColIndex = 0;
+
 	CPrevClickData& prevData = CPrevClickData::getInstance();
+	prevData.getPrevRowIndex(prevRowIndex);
+	prevData.getPrevColIndex(prevColIndex);
+
 	if (firstClick && m_isValid) {	// 첫번째 클릭 칸에 기물이 있을 때
 		if (turn == m_team) {		// 우리팀 기물이어야 클릭 가능
 			prevData.setPrevTeam(turn);
@@ -84,11 +88,15 @@ bool CSpace::isValidClick(const Team turn, bool firstClick) {
 		}
 	}
 	else if (!firstClick && canMove()) {		// 두번째 클릭인 경우 기물이 움직일 수 있는 칸일 때
-		prevData.getPrevRowIndex(prevRowIndex);
-		prevData.getPrevColIndex(prevColIndex);
 		prevData.setisExist(prevRowIndex, prevColIndex, false);
 		prevData.setisExist(m_rowIndex, m_colIndex, true);
 		retVal = true;
+	} 
+	else if (prevRowIndex == m_rowIndex && prevColIndex == m_colIndex) {	// 이전과 같은 칸을 클릭했을 때
+		retVal = true;
+	}
+	else {
+		// no action
 	}
 
 	return retVal;
