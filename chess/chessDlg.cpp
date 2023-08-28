@@ -65,7 +65,6 @@ BEGIN_MESSAGE_MAP(CchessDlg, CDialogEx)
 	ON_WM_SYSCOMMAND()
 	ON_WM_PAINT()
 	ON_WM_QUERYDRAGICON()
-	ON_BN_CLICKED(IDC_BUTTON1, &CchessDlg::OnBnClickedButton1)
 	ON_WM_LBUTTONDOWN()
 END_MESSAGE_MAP()
 
@@ -173,11 +172,7 @@ void CchessDlg::OnPaint()
 						dc.FillSolidRect(CRect(x, y, x + 40, y + 40), RGB(255, 255, 255));
 						m_isWhiteSpace[i][j] = true;
 					}
-					dc.MoveTo(x, y);
-					dc.LineTo(x + 40, y);
-					dc.LineTo(x + 40, y + 40);
-					dc.LineTo(x, y + 40);
-					dc.LineTo(x, y);
+					drawSquareLine(&dc, x, y);
 
 					x += 40;
 					count++;
@@ -196,11 +191,7 @@ void CchessDlg::OnPaint()
 
 				dc.FillSolidRect(CRect(m_prevX, m_prevY, m_prevX + 40, m_prevY + 40), RGB(180, 0, 0));
 
-				dc.MoveTo(m_prevX, m_prevY);
-				dc.LineTo(m_prevX + 40, m_prevY);
-				dc.LineTo(m_prevX + 40, m_prevY + 40);
-				dc.LineTo(m_prevX, m_prevY + 40);
-				dc.LineTo(m_prevX, m_prevY);
+				drawSquareLine(&dc, m_prevX, m_prevY);
 
 				CDialogEx::OnPaint();
 			}
@@ -211,11 +202,7 @@ void CchessDlg::OnPaint()
 				else {																	// 회색
 					dc.FillSolidRect(CRect(m_prevX, m_prevY, m_prevX + 40, m_prevY + 40), RGB(150, 150, 150));
 				}
-				dc.MoveTo(m_prevX, m_prevY);
-				dc.LineTo(m_prevX + 40, m_prevY);
-				dc.LineTo(m_prevX + 40, m_prevY + 40);
-				dc.LineTo(m_prevX, m_prevY + 40);
-				dc.LineTo(m_prevX, m_prevY);
+				drawSquareLine(&dc, m_prevX, m_prevY);
 
 				CDialogEx::OnPaint();
 			}
@@ -224,20 +211,22 @@ void CchessDlg::OnPaint()
 	
 }
 
+void CchessDlg::drawSquareLine(CPaintDC* dc, int x, int y)
+{
+	dc->MoveTo(x, y);
+	dc->LineTo(x + 40, y);
+	dc->LineTo(x + 40, y + 40);
+	dc->LineTo(x, y + 40);
+	dc->LineTo(x, y);
+}
+
+
 // 사용자가 최소화된 창을 끄는 동안에 커서가 표시되도록 시스템에서
 //  이 함수를 호출합니다.
 HCURSOR CchessDlg::OnQueryDragIcon()
 {
 	return static_cast<HCURSOR>(m_hIcon);
 }
-
-
-
-void CchessDlg::OnBnClickedButton1()
-{
-	// TODO: 여기에 컨트롤 알림 처리기 코드를 추가합니다.
-}
-
 
 void CchessDlg::OnLButtonDown(UINT nFlags, CPoint point)
 {
@@ -272,3 +261,4 @@ void CchessDlg::OnLButtonDown(UINT nFlags, CPoint point)
 	}
 	CDialogEx::OnLButtonDown(nFlags, point);
 }
+

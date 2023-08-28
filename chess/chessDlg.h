@@ -32,8 +32,9 @@ protected:
 	afx_msg HCURSOR OnQueryDragIcon();
 	DECLARE_MESSAGE_MAP()
 public:
-	afx_msg void OnBnClickedButton1();
 	afx_msg void OnLButtonDown(UINT nFlags, CPoint point);
+
+	void drawSquareLine(CPaintDC* dc, int x, int y);
 
 
 public:

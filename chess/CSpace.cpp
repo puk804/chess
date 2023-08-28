@@ -3,6 +3,8 @@
 #include "CPrevClickData.h"
 #include <iostream>
 
+#define MAX 9999
+
 CSpace::CSpace() {
 	//no action
 }
@@ -90,6 +92,8 @@ bool CSpace::isValidClick(const Team turn, bool firstClick) {
 	else if (!firstClick && canMove()) {		// 두번째 클릭인 경우 기물이 움직일 수 있는 칸일 때
 		prevData.setisExist(prevRowIndex, prevColIndex, false);
 		prevData.setisExist(m_rowIndex, m_colIndex, true);
+		prevData.setPrevRowIndex(MAX);			// 초기화 개념
+		prevData.setPrevColIndex(MAX);
 		retVal = true;
 	} 
 	else if (prevRowIndex == m_rowIndex && prevColIndex == m_colIndex) {	// 이전과 같은 칸을 클릭했을 때
