@@ -6,14 +6,14 @@ class CSpace
 public:
 	CSpace();
 	CSpace(int x, int y, int spaceNum);
-	void unitClear(CSpace& space);
+	void unitClear();
 
 
 public:
 	void getSpaceIndex(int& x, int& y);
 	void changeCoorToNum(int& coor);
-	bool isValidClick(CSpace space, bool firstClick);
-	bool canMove(CSpace space);
+	bool isValidClick(const Team turn, bool firstClick);
+	bool canMove();
 
 
 public:

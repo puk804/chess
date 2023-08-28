@@ -38,5 +38,7 @@ public:
 
 public:
 	CSpace m_spaceNum[8][8];
+	CSpace m_clickedSpace;
 	bool m_isFirstClick;
+	Team m_turn;
 };

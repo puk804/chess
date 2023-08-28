@@ -43,10 +43,10 @@ CSpace::CSpace(int x, int y, int spaceNum) {
 	}
 }
 
-void CSpace::unitClear(CSpace& space) {
-	space.m_isValid = false;
-	space.m_team = Team::None;
-	space.m_unit = Unit::None;
+void CSpace::unitClear() {
+	m_isValid = false;
+	m_team = Team::None;
+	m_unit = Unit::None;
 }
 
 void CSpace::getSpaceIndex(int& x, int& y) {
@@ -65,13 +65,15 @@ void CSpace::changeCoorToNum(int& coor) {
 	}
 }
 
-bool CSpace::isValidClick(CSpace space, bool firstClick) {
+bool CSpace::isValidClick(const Team turn, bool firstClick) {
 	bool retVal = false;
-	if (firstClick && space.m_isValid) {	// 첫번째 클릭 칸에 기물이 있을 때
-
-		retVal = true;
+	if (firstClick && m_isValid) {	// 첫번째 클릭 칸에 기물이 있을 때
+		if (turn == m_team) {		// 우리팀 기물이어야 클릭 가능
+			retVal = true;
+		}
 	}
-	else if (!firstClick && CSpace::canMove(space)) {		// 두번째 클릭인 경우 기물이 움직일 수 있는 칸일 때
+	else if (!firstClick && canMove()) {		// 두번째 클릭인 경우 기물이 움직일 수 있는 칸일 때
+
 		
 		retVal = true;
 	}
@@ -79,10 +81,10 @@ bool CSpace::isValidClick(CSpace space, bool firstClick) {
 	return retVal;
 }
 
-bool CSpace::canMove(CSpace space) {
+bool CSpace::canMove() {
 	bool retVal = false;
 
-	switch (space.m_unit) {
+	switch (m_unit) {
 		case Unit::Pawn:
 
 			break;

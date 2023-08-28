@@ -103,7 +103,9 @@ BOOL CchessDlg::OnInitDialog()
 
 	// TODO: 여기에 추가 초기화 작업을 추가합니다.
 
-	m_isFirstClick = false;
+	m_isFirstClick = true;
+	m_clickedSpace = CSpace();
+	m_turn = Team::White;
 
 	return TRUE;  // 포커스를 컨트롤에 설정하지 않으면 TRUE를 반환합니다.
 }
@@ -159,7 +161,7 @@ void CchessDlg::OnPaint()
 				x = 10;
 				draw = !draw;
 			}
-			for (int j = 1; j < 9; ++j) {
+			for (int j = 0; j < 8; ++j) {
 				dc.MoveTo(x, y);
 				dc.LineTo(x + 40, y);
 				dc.LineTo(x + 40, y + 40);
@@ -199,12 +201,27 @@ void CchessDlg::OnBnClickedButton1()
 void CchessDlg::OnLButtonDown(UINT nFlags, CPoint point)
 {
 	if ((point.x < 330 && point.x >= 10) && (point.y < 330 && point.x >= 10)) {
-		int x = point.x;
-		int y = point.y;
+		int x = point.y;
+		int y = point.x;
 		CSpace().getSpaceIndex(x, y);
 
-		if (CSpace().isValidClick(m_spaceNum[x][y], m_isFirstClick)) {	// 유효한 클릭인지 체크
+		if (m_spaceNum[x][y].isValidClick(m_turn, m_isFirstClick)) {	// 유효한 클릭인지 체크
+			if (m_isFirstClick) {
+				m_clickedSpace = m_spaceNum[x][y];
+			}
+			else {
+				if (m_clickedSpace.m_spaceNum == m_spaceNum[x][y].m_spaceNum) {	// 같은 곳을 클릭했을때
+				
+				}
+				else {
 
+
+					m_turn == Team::White ? m_turn = Team::Black : m_turn = Team::White;
+				}
+				m_clickedSpace.unitClear();
+			}
+
+			m_isFirstClick = !m_isFirstClick;
 		}
 
 
