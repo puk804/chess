@@ -203,7 +203,7 @@ void CchessDlg::OnLButtonDown(UINT nFlags, CPoint point)
 	if ((point.x < 330 && point.x >= 10) && (point.y < 330 && point.x >= 10)) {
 		int x = point.y;
 		int y = point.x;
-		CSpace().getSpaceIndex(x, y);
+		CSpace().getSpaceIndex(x, y);		// 함수 정의위치 바꾸기
 
 		if (m_spaceNum[x][y].isValidClick(m_turn, m_isFirstClick)) {	// 유효한 클릭인지 체크
 			if (m_isFirstClick) {
@@ -211,10 +211,13 @@ void CchessDlg::OnLButtonDown(UINT nFlags, CPoint point)
 			}
 			else {
 				if (m_spaceNum[x][y].m_team != m_clickedSpace.m_team) {	// 같은 팀이 있는 곳을 클릭 방지
-					int prevX = m_clickedSpace.m_xStart;
-					int prevY = m_clickedSpace.m_yStart;
+					int prevX = m_clickedSpace.m_rowIndex;
+					int prevY = m_clickedSpace.m_colIndex;
 
-					m_spaceNum[x][y] = m_spaceNum[prevX][prevY];
+					// todo: 복사생성자로 어떻게 안 될까?
+					m_spaceNum[x][y].m_isValid = m_spaceNum[prevX][prevY].m_isValid;
+					m_spaceNum[x][y].m_team = m_spaceNum[prevX][prevY].m_team;
+					m_spaceNum[x][y].m_unit = m_spaceNum[prevX][prevY].m_unit;
 					m_spaceNum[prevX][prevY].unitClear();
 
 					m_turn == Team::White ? m_turn = Team::Black : m_turn = Team::White;
