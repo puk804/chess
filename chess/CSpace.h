@@ -5,7 +5,7 @@ class CSpace
 {
 public:
 	CSpace();
-	CSpace(int x, int y, int spaceNum);
+	CSpace(int i, int j, int x, int y, int spaceNum);
 	void unitClear();
 
 
@@ -14,6 +14,16 @@ public:
 	void changeCoorToNum(int& coor);
 	bool isValidClick(const Team turn, bool firstClick);
 	bool canMove();
+	
+	bool pawnMove();
+	bool rookMove();
+	bool knightMove();
+	bool bishopMove();
+	bool queenMove();
+	bool kingMove();
+
+	bool straightMove(int canMove);
+	bool diagonalMove();
 
 
 public:
@@ -22,6 +32,8 @@ public:
 	int m_xEnd;
 	int m_yEnd;
 	int m_spaceNum;
+	int m_rowIndex;
+	int m_colIndex;
 
 	bool m_isValid;	// 해당 공간에 기물이 있는지
 	Team m_team;

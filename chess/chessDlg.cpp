@@ -167,7 +167,7 @@ void CchessDlg::OnPaint()
 				dc.LineTo(x + 40, y + 40);
 				dc.LineTo(x, y + 40);
 				dc.LineTo(x, y);
-				m_spaceNum[i][j] = CSpace(x, y, count);
+				m_spaceNum[i][j] = CSpace(i, j, x, y, count);
 
 
 				if (draw) {
@@ -210,15 +210,15 @@ void CchessDlg::OnLButtonDown(UINT nFlags, CPoint point)
 				m_clickedSpace = m_spaceNum[x][y];
 			}
 			else {
-				if (m_clickedSpace.m_spaceNum == m_spaceNum[x][y].m_spaceNum) {	// 같은 곳을 클릭했을때
-				
-				}
-				else {
+				if (m_spaceNum[x][y].m_team != m_clickedSpace.m_team) {	// 같은 팀이 있는 곳을 클릭 방지
+					int prevX = m_clickedSpace.m_xStart;
+					int prevY = m_clickedSpace.m_yStart;
 
+					m_spaceNum[x][y] = m_spaceNum[prevX][prevY];
+					m_spaceNum[prevX][prevY].unitClear();
 
 					m_turn == Team::White ? m_turn = Team::Black : m_turn = Team::White;
 				}
-				m_clickedSpace.unitClear();
 			}
 
 			m_isFirstClick = !m_isFirstClick;

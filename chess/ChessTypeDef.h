@@ -13,6 +13,6 @@ enum class Unit{
 
 enum class Team {
 	None = 0,
-	White = 1,
-	Black = 2
+	White = 1,	// 체스판 위쪽 팀
+	Black = 2	// 체스판 아래쪽 팀
 };

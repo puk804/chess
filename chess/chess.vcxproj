@@ -190,6 +190,7 @@
     <ClInclude Include="chess.h" />
     <ClInclude Include="chessDlg.h" />
     <ClInclude Include="ChessTypeDef.h" />
+    <ClInclude Include="CPrevClickData.h" />
     <ClInclude Include="CSpace.h" />
     <ClInclude Include="framework.h" />
     <ClInclude Include="pch.h" />
@@ -199,6 +200,7 @@
   <ItemGroup>
     <ClCompile Include="chess.cpp" />
     <ClCompile Include="chessDlg.cpp" />
+    <ClCompile Include="CPrevClickData.cpp" />
     <ClCompile Include="CSpace.cpp" />
     <ClCompile Include="pch.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Create</PrecompiledHeader>
