@@ -8,6 +8,7 @@
 #include "chessDlg.h"
 #include "afxdialogex.h"
 
+
 #ifdef _DEBUG
 #define new DEBUG_NEW
 #endif
@@ -107,6 +108,14 @@ BOOL CchessDlg::OnInitDialog()
 	m_prevSpace = CSpace();
 	m_turn = Team::White;
 
+	m_unitToString = {
+		{Unit::Pawn, "pawn"},
+		{Unit::Rook, "rook"},
+		{Unit::Knight, "knight"},
+		{Unit::Bishop, "bishop"},
+		{Unit::Queen, "queen"},
+		{Unit::King, "king"},
+	};
 	return TRUE;  // 포커스를 컨트롤에 설정하지 않으면 TRUE를 반환합니다.
 }
 
@@ -205,7 +214,7 @@ void CchessDlg::OnPaint()
 					dc.FillSolidRect(CRect(m_prevX, m_prevY, m_prevX + 40, m_prevY + 40), RGB(163, 121, 89));
 				}
 
-				drawUnit(&dc, m_nowSpace.m_xStart, m_nowSpace.m_yStart, Team::None, Unit::None);
+				drawUnit(&dc, m_nowSpace.m_xStart, m_nowSpace.m_yStart, m_prevSpace.m_team, m_prevSpace.m_unit);
 
 				drawSquareLine(&dc, m_prevX, m_prevY);
 
@@ -231,7 +240,21 @@ void CchessDlg::drawUnit(CPaintDC* dc, int x, int y, Team team, Unit unit)
 	CRect rct = CRect(10, 10, 50, 50);
 	CString fname;
 
-	fname.Format(_T("pawn_black.png")); // 파일 경로
+	std::string imgPath = "res/unit/";
+	std::string teamName = "";
+	std::string unitName = "";
+
+	for (auto iter : m_unitToString) {
+		if (iter.first == unit) {
+			unitName = iter.second;
+			break;
+		}
+	}
+
+	team == Team::White ? teamName = "white/" : teamName = "black/";
+
+	imgPath += teamName + unitName + ".png";
+	fname = imgPath.c_str();
 
 	if (SUCCEEDED(pngImage.Load(fname))) // SUCCEEDED 매크로로 로드 성공 여부 확인
 	{
@@ -255,31 +278,19 @@ void CchessDlg::firstUnitSetting(CPaintDC* dc, int x, int y, int row, int col)
 	}
 
 	if (team != Team::None) {
-		switch (col) {
-			case 0:
-			case 7:
-				unit = Unit::Rook;
-				break;
-			case 1:
-			case 6:
-				unit = Unit::Knight;
-				break;
-			case 2:
-			case 5:
-				unit = Unit::Bishop;
-				break;
-			case 3:
-				unit = Unit::Queen;
-			case 4:
-				unit = Unit::King;
-				break;
-			default:
-				break;
+		if (row == 0 || row == 7) {
+			const Unit units[] = { Unit::Rook, Unit::Knight, Unit::Bishop, Unit::Queen, Unit::King, Unit::Bishop, Unit::Knight, Unit::Rook };
+			unit = units[col];
 		}
+		else if (row == 1 || row == 6) {
+			unit = Unit::Pawn;
+		}
+	}
+
+	if (unit != Unit::None) {
 		drawUnit(dc, x, y, team, unit);
 	}
 }
-
 
 // 사용자가 최소화된 창을 끄는 동안에 커서가 표시되도록 시스템에서
 //  이 함수를 호출합니다.
@@ -317,8 +328,6 @@ void CchessDlg::OnLButtonDown(UINT nFlags, CPoint point)
 			m_nowSpace = m_spaceNum[x][y];			// 현재 클릭한 곳의 정보를 담아서 그림을 그리기 위함
 			Invalidate(false);		// 수정된 부분만 그리기 예약
 		}
-
-
 	}
 	CDialogEx::OnLButtonDown(nFlags, point);
 }

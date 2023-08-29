@@ -4,6 +4,7 @@
 
 #pragma once
 #include "CSpace.h"
+#include <map>
 
 // CchessDlg 대화 상자
 class CchessDlg : public CDialogEx
@@ -51,4 +52,6 @@ public:
 	int m_prevX;
 	int m_prevY;
 	int m_preSpaceNum;
+
+	std::map<Unit, std::string> m_unitToString;
 };
