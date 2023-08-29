@@ -35,11 +35,14 @@ public:
 	afx_msg void OnLButtonDown(UINT nFlags, CPoint point);
 
 	void drawSquareLine(CPaintDC* dc, int x, int y);
+	void drawUnit(CPaintDC* dc, int x, int y, Team team, Unit unit);
+	void firstUnitSetting(CPaintDC* dc, int x, int y, int row, int col);
 
 
 public:
 	CSpace m_spaceNum[8][8];
 	CSpace m_prevSpace;
+	CSpace m_nowSpace;
 	bool m_isFirstClick;
 	bool m_isFirstPaint;
 	bool m_isWhiteSpace[8][8];

@@ -154,54 +154,59 @@ void CchessDlg::OnPaint()
 			int x = 10;
 			int y = 10;
 			int count = 1;
-			bool draw = true;
+			bool drawBlack = true;
 
 			for (int i = 0; i < 8; ++i) {
-				if (i > 0) {
-					y += 40;
-					x = 10;
-					draw = !draw;
-				}
 				for (int j = 0; j < 8; ++j) {
 					m_spaceNum[i][j] = CSpace(i, j, x, y, count);
-					if (draw) {
-						dc.FillSolidRect(CRect(x, y, x + 40, y + 40), RGB(150, 150, 150));
+					if (drawBlack) {
+						dc.FillSolidRect(CRect(x, y, x + 40, y + 40), RGB(163, 121, 89));	// 어두운 공간
 						m_isWhiteSpace[i][j] = false;
 					}
 					else {
-						dc.FillSolidRect(CRect(x, y, x + 40, y + 40), RGB(255, 255, 255));
+						dc.FillSolidRect(CRect(x, y, x + 40, y + 40), RGB(246, 230, 198));	// 밝은 공간
 						m_isWhiteSpace[i][j] = true;
 					}
+					firstUnitSetting(&dc, x, y, i, j);
 					drawSquareLine(&dc, x, y);
 
 					x += 40;
 					count++;
-					draw = !draw;
+					drawBlack = !drawBlack;
 				}
+				y += 40;
+				x = 10;
+				drawBlack = !drawBlack;
 			}
+
 			m_isFirstPaint = false;
 			CDialogEx::OnPaint();
 		}
 		else {
-			if (!m_isFirstClick) {		// 첫번째 클릭했을 때 (아래에서 업데이트 후 paint 하는거라 반대임)
+			if (!m_isFirstClick) {		// 첫번째 클릭 (아래에서 업데이트 후 paint 하는거라 반대임)
 
 				m_prevX = m_prevSpace.m_xStart;
 				m_prevY = m_prevSpace.m_yStart;
 				m_preSpaceNum = m_prevSpace.m_spaceNum;
 
-				dc.FillSolidRect(CRect(m_prevX, m_prevY, m_prevX + 40, m_prevY + 40), RGB(180, 0, 0));
+				dc.FillSolidRect(CRect(m_prevX, m_prevY, m_prevX + 40, m_prevY + 40), RGB(220, 0, 0));
+
+				drawUnit(&dc, m_nowSpace.m_xStart, m_nowSpace.m_yStart, m_prevSpace.m_team, m_prevSpace.m_unit);
 
 				drawSquareLine(&dc, m_prevX, m_prevY);
 
 				CDialogEx::OnPaint();
 			}
-			else {
-				if (m_isWhiteSpace[m_prevSpace.m_rowIndex][m_prevSpace.m_colIndex]) {	// 흰색
-					dc.FillSolidRect(CRect(m_prevX, m_prevY, m_prevX + 40, m_prevY + 40), RGB(255, 255, 255));
+			else {						// 두번째 클릭
+				if (m_isWhiteSpace[m_prevSpace.m_rowIndex][m_prevSpace.m_colIndex]) {	// 이전 클릭 공간이 밝은색
+					dc.FillSolidRect(CRect(m_prevX, m_prevY, m_prevX + 40, m_prevY + 40), RGB(246, 230, 198));
 				}
-				else {																	// 회색
-					dc.FillSolidRect(CRect(m_prevX, m_prevY, m_prevX + 40, m_prevY + 40), RGB(150, 150, 150));
+				else {																	// 이전 클릭 공간이 어두운색
+					dc.FillSolidRect(CRect(m_prevX, m_prevY, m_prevX + 40, m_prevY + 40), RGB(163, 121, 89));
 				}
+
+				drawUnit(&dc, m_nowSpace.m_xStart, m_nowSpace.m_yStart, Team::None, Unit::None);
+
 				drawSquareLine(&dc, m_prevX, m_prevY);
 
 				CDialogEx::OnPaint();
@@ -220,6 +225,61 @@ void CchessDlg::drawSquareLine(CPaintDC* dc, int x, int y)
 	dc->LineTo(x, y);
 }
 
+void CchessDlg::drawUnit(CPaintDC* dc, int x, int y, Team team, Unit unit)
+{
+	CImage pngImage;
+	CRect rct = CRect(10, 10, 50, 50);
+	CString fname;
+
+	fname.Format(_T("pawn_black.png")); // 파일 경로
+
+	if (SUCCEEDED(pngImage.Load(fname))) // SUCCEEDED 매크로로 로드 성공 여부 확인
+	{
+		pngImage.Draw(dc->GetSafeHdc(), x, y, rct.Width(), rct.Height());
+	}
+}
+
+void CchessDlg::firstUnitSetting(CPaintDC* dc, int x, int y, int row, int col)
+{
+	Team team = Team::None;
+	Unit unit = Unit::None;
+
+	if (row < 2) {
+		team = Team::White;
+	}
+	else if (row > 5) {
+		team = Team::Black;
+	}
+	else {
+		team = Team::None;
+	}
+
+	if (team != Team::None) {
+		switch (col) {
+			case 0:
+			case 7:
+				unit = Unit::Rook;
+				break;
+			case 1:
+			case 6:
+				unit = Unit::Knight;
+				break;
+			case 2:
+			case 5:
+				unit = Unit::Bishop;
+				break;
+			case 3:
+				unit = Unit::Queen;
+			case 4:
+				unit = Unit::King;
+				break;
+			default:
+				break;
+		}
+		drawUnit(dc, x, y, team, unit);
+	}
+}
+
 
 // 사용자가 최소화된 창을 끄는 동안에 커서가 표시되도록 시스템에서
 //  이 함수를 호출합니다.
@@ -233,14 +293,14 @@ void CchessDlg::OnLButtonDown(UINT nFlags, CPoint point)
 	if ((point.x < 330 && point.x >= 10) && (point.y < 330 && point.x >= 10)) {
 		int x = point.y;
 		int y = point.x;
-		CSpace().getSpaceIndex(x, y);		// 함수 정의위치 바꾸기
+		CSpace().getSpaceIndex(x, y);		// todo: 함수 정의위치 바꾸기
 
 		if (m_spaceNum[x][y].isValidClick(m_turn, m_isFirstClick)) {	// 유효한 클릭인지 체크
 			if (m_isFirstClick) {
 				m_prevSpace = m_spaceNum[x][y];
 			}
 			else {
-				if (m_spaceNum[x][y].m_team != m_prevSpace.m_team) {	// 같은 팀이 있는 곳을 클릭 방지
+				if (m_spaceNum[x][y].m_team != m_prevSpace.m_team) {	// 똑같은곳 2번 클릭이면 무효
 					int prevX = m_prevSpace.m_rowIndex;
 					int prevY = m_prevSpace.m_colIndex;
 
@@ -253,8 +313,9 @@ void CchessDlg::OnLButtonDown(UINT nFlags, CPoint point)
 					m_turn == Team::White ? m_turn = Team::Black : m_turn = Team::White;
 				}
 			}
-			Invalidate(false);		// 수정된 부분만 그리기 예약
 			m_isFirstClick = !m_isFirstClick;
+			m_nowSpace = m_spaceNum[x][y];			// 현재 클릭한 곳의 정보를 담아서 그림을 그리기 위함
+			Invalidate(false);		// 수정된 부분만 그리기 예약
 		}
 
 
