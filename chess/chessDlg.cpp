@@ -214,15 +214,22 @@ void CchessDlg::OnPaint()
 					dc.FillSolidRect(CRect(m_prevX, m_prevY, m_prevX + 40, m_prevY + 40), RGB(163, 121, 89));
 				}
 
+				if (m_isWhiteSpace[m_nowSpace.m_rowIndex][m_nowSpace.m_colIndex]) {		// 현재 클릭 공간이 밝은색
+					dc.FillSolidRect(CRect(m_nowSpace.m_xStart, m_nowSpace.m_yStart, m_nowSpace.m_xStart + 40, m_nowSpace.m_yStart + 40), RGB(246, 230, 198));
+				}
+				else {																	// 현재 클릭 공간이 어두운색
+					dc.FillSolidRect(CRect(m_nowSpace.m_xStart, m_nowSpace.m_yStart, m_nowSpace.m_xStart + 40, m_nowSpace.m_yStart + 40), RGB(163, 121, 89));
+				}
+
 				drawUnit(&dc, m_nowSpace.m_xStart, m_nowSpace.m_yStart, m_prevSpace.m_team, m_prevSpace.m_unit);
 
 				drawSquareLine(&dc, m_prevX, m_prevY);
+				drawSquareLine(&dc, m_nowSpace.m_xStart, m_nowSpace.m_yStart);
 
 				CDialogEx::OnPaint();
 			}
 		}
 	}
-	
 }
 
 void CchessDlg::drawSquareLine(CPaintDC* dc, int x, int y)

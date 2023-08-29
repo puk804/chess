@@ -220,10 +220,14 @@ bool CSpace::straightMove(int canMove) {
 		return retVal;
 	}
 
-	// 아래부분 함수 포인터 사용 가능할듯..
+	// todo: 아래부분 함수 포인터 사용 가능할듯..
+	// todo: Pawn을 제외하면 클릭한 칸에 상대 기물이 있으면 이동 가능해야 한다. + 0, 7번 라인에서도 인덱스 참조 괜찮은지 확인하기
 	if (prevRow > m_rowIndex) {		// 위로 이동하는 경우
-		prevRow -= 1;
+		--prevRow;
 		for (prevRow; prevRow >= m_rowIndex; --prevRow) {
+			if (prevRow == m_rowIndex) {
+				return true;
+			}
 			prevData.getisExist(prevRow, prevCol, isExist);
 			if (isExist == true) {
 				return retVal;
@@ -232,8 +236,11 @@ bool CSpace::straightMove(int canMove) {
 		}
 	}
 	else {							// 아래로 이동하는 경우
-		prevRow += 1;
+		++prevRow;
 		for (prevRow; prevRow <= m_rowIndex; ++prevRow) {
+			if (prevRow == m_rowIndex) {
+				return true;
+			}
 			prevData.getisExist(prevRow, prevCol, isExist);
 			if (isExist == true) {
 				return retVal;
