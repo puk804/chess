@@ -329,3 +329,5 @@ bool CSpace::diagonalMove(int canMove) {
 
 	return retVal;
 }
+
+// git reset test¿ë Ä¿¹Ô
