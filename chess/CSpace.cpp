@@ -302,6 +302,7 @@ bool CSpace::straightMove(int canMove) {
 		// no action
 	}
 
+	// todo: Knight는 마지막에 Row나 Col을 set해줘야 할듯..
 
 	return retVal;
 }
@@ -325,6 +326,25 @@ bool CSpace::diagonalMove(int canMove) {
 
 	if (std::abs(prevRow - m_rowIndex) > canMove) {		// 움직임이 가능한 칸보다 많이 움직였을 때
 		return retVal;
+	}
+
+	if (prevRow > m_rowIndex && prevCol > m_colIndex) {		// 왼쪽 위로 이동하는 경우
+		--prevRow;								// 다음 칸부터 검사
+		for (prevRow; prevRow >= m_rowIndex; --prevRow) {		// 무조건 대각선 움직임이라서 행/열 하나만 가지고 판단 가능
+			--prevCol;
+			prevData.getisExist(prevRow, prevCol, isExist);
+			if (prevRow == m_rowIndex) {		// Pawn 은 마지막 이동 지점에 상대 기물이 있어야 이동 가능 
+				if (prevUnit != Unit::Pawn || (prevUnit == Unit::Pawn && isExist == true)) {
+					retVal = true;
+				}
+			}
+			else {
+				if (isExist == true) {
+					retVal = false;
+					break;
+				}
+			}
+		}
 	}
 
 	return retVal;
