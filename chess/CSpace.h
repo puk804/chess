@@ -24,7 +24,7 @@ public:
 	bool kingMove();
 
 	bool straightMove(int canMove);
-	bool diagonalMove(int camMove);
+	bool diagonalMove(int canMove);
 
 
 public:

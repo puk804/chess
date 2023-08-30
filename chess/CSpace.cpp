@@ -220,7 +220,7 @@ bool CSpace::straightMove(int canMove) {
 		return retVal;
 	}
 
-	if (prevRow != m_rowIndex || prevCol != m_colIndex) {	// 직선 움직임일때
+	if (prevRow != m_rowIndex && prevCol != m_colIndex) {	// 직선 움직임이 아닐 때
 		return retVal;
 	}
 
@@ -230,7 +230,6 @@ bool CSpace::straightMove(int canMove) {
 	}
 
 	// todo: 아래부분 함수 포인터 사용 가능할듯..
-	// todo: Pawn을 제외하면 클릭한 칸에 상대 기물이 있으면 이동 가능해야 한다. + 0, 7번 라인에서도 인덱스 참조 괜찮은지 확인하기
 	if (prevRow > m_rowIndex) {		// 위로 이동하는 경우
 		--prevRow;					// 다음 칸부터 검사
 		for (prevRow; prevRow >= m_rowIndex; --prevRow) {
@@ -265,15 +264,68 @@ bool CSpace::straightMove(int canMove) {
 			}
 		}
 	}
+	else if (prevCol > m_colIndex) {	// 왼쪽으로 이동하는 경우
+		--prevCol;						// 다음 칸부터 검사
+		for (prevCol; prevCol <= m_colIndex; --prevCol) {
+			prevData.getisExist(prevRow, prevCol, isExist);
+			if (prevCol == m_colIndex) {		// 마지막 이동 지점이면 상대 기물이 있어도 이동 가능 (Pawn 제외)
+				if (prevUnit != Unit::Pawn || (prevUnit == Unit::Pawn && isExist == false)) {
+					retVal = true;
+				}
+			}
+			else {
+				if (isExist == true) {
+					retVal = false;
+					break;
+				}
+			}
+		}
+	}
+	else if (prevCol < m_colIndex) {	// 오른쪽으로 이동하는 경우
+		++prevCol;						// 다음 칸부터 검사
+		for (prevCol; prevCol >= m_colIndex; ++prevCol) {
+			prevData.getisExist(prevRow, prevCol, isExist);
+			if (prevCol == m_colIndex) {		// 마지막 이동 지점이면 상대 기물이 있어도 이동 가능 (Pawn 제외)
+				if (prevUnit != Unit::Pawn || (prevUnit == Unit::Pawn && isExist == false)) {
+					retVal = true;
+				}
+			}
+			else {
+				if (isExist == true) {
+					retVal = false;
+					break;
+				}
+			}
+		}
+	}
+	else {
+		// no action
+	}
 
 
 	return retVal;
 }
 
-bool CSpace::diagonalMove(int camMove) {
+bool CSpace::diagonalMove(int canMove) {
 	bool retVal = false;
+	bool isExist = false;
+	int prevRow = 0;
+	int prevCol = 0;
+	Unit prevUnit = Unit::None;
 
-	
+	CPrevClickData& prevData = CPrevClickData::getInstance();
+
+	prevData.getPrevRowIndex(prevRow);
+	prevData.getPrevColIndex(prevCol);
+	prevData.getPrevUnit(prevUnit);
+
+	if (prevRow - m_rowIndex != prevCol - m_colIndex) {	// 대각선 움직임이 아닐 때
+		return retVal;
+	}
+
+	if (std::abs(prevRow - m_rowIndex) > canMove) {		// 움직임이 가능한 칸보다 많이 움직였을 때
+		return retVal;
+	}
 
 	return retVal;
 }
