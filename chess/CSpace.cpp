@@ -108,142 +108,83 @@ bool CSpace::isValidClick(const Team turn, bool firstClick) {
 
 bool CSpace::canMove() {
 	bool retVal = false;
+	int canMove = 0;
+	int prevRow = 0;
+	int prevCol = 0;
 	Unit prevUnit = Unit::None;
 	Team prevTeam = Team::None;
+
 	CPrevClickData& prevData = CPrevClickData::getInstance();
+	prevData.getPrevRowIndex(prevRow);
+	prevData.getPrevColIndex(prevCol);
 	prevData.getPrevUnit(prevUnit);
 	prevData.getPrevTeam(prevTeam);
 
-	if (prevTeam != m_team) {			// 같은 팀 기물이 있는곳으로 움직일 수 없음
-		switch (prevUnit) {
-			case Unit::Pawn:
-				retVal = pawnMove();
-				break;
-			case Unit::Rook:
-				retVal = rookMove();
-				break;
-			case Unit::Knight:
-				retVal = knightMove();
-				break;
-			case Unit::Bishop:
-				retVal = bishopMove();
-				break;
-			case Unit::Queen:
-				retVal = queenMove();
-				break;
-			case Unit::King:
-				retVal = kingMove();
-				break;
-			default:
-				retVal = false;
-				break;
-		}
+	if (prevTeam == m_team) {			// 같은 팀 기물이 있는곳으로 움직일 수 없음
+		return false;
 	}
-	return retVal;
-}
 
-bool CSpace::pawnMove() {
-	Team prevTeam = Team::None;
-	bool retVal = false;
-	int canStrMove = 1;
-	int canDiaMove = 1;
-	int clickMove = 0;
-	int prevRow = 0;
-	int prevCol = 0;
-
-	CPrevClickData& prevData = CPrevClickData::getInstance();
-	prevData.getPrevTeam(prevTeam);
-	prevData.getPrevRowIndex(prevRow);
-	prevData.getPrevColIndex(prevCol);
-
-	if (prevRow == 1 || prevRow == 6) {
-		canStrMove = 2;
-	}
-	
-	if ((prevTeam == Team::White && prevRow < m_rowIndex) ||
-		(prevTeam == Team::Black && prevRow > m_rowIndex)) {
-		if (prevCol != m_colIndex) {
-			retVal = diagonalMove(canDiaMove);
+	if (prevUnit == Unit::Pawn) {		// Pawn 은 처음 직선으로 2칸 움직임 가능
+		if ((prevRow == 1 || prevRow == 6) && prevCol == m_colIndex) {
+			canMove = 2;
 		}
 		else {
-			retVal = straightMove(canStrMove);
+			canMove = 1;
+		}
+	}
+	else if (prevUnit == Unit::King) {
+		canMove = 1;
+	}
+	else {								// Pawn, King을 제외한 나머지 유닛은 7칸까지 움직임 가능. (Knight는 변수 미사용)
+		canMove = 7;
+	}
+
+
+	if (prevRow == m_rowIndex || prevCol == m_colIndex) {		// 직선 움직임일 때
+		if (checkUnitMoveType(prevTeam, prevUnit, Move::STRAIGHT, prevRow)) {
+			retVal = straightMove(canMove);
+		}
+	}
+	else if (std::abs(prevRow - m_rowIndex) == std::abs(prevCol - m_colIndex)) {	// 대각선 움직임일 때
+		if (checkUnitMoveType(prevTeam, prevUnit, Move::DIAGONAL, prevRow)) {
+			retVal = diagonalMove(canMove);
+		}
+	}
+	else if((std::abs(prevRow - m_rowIndex) == 2 && std::abs(prevCol - m_colIndex) == 1) ||		// Knight 전용 움직임
+			(std::abs(prevRow - m_rowIndex) == 1 && std::abs(prevCol - m_colIndex) == 2)) {
+		if (prevUnit == Unit::Knight) {
+			retVal = true;
+		}		
+	}
+	else {
+		// no action
+	}
+
+	return retVal;
+}
+
+bool CSpace::checkUnitMoveType(Team team, Unit unit, Move move, int row){
+	bool retVal = false;
+
+	if (unit == Unit::Pawn) {								// Pawn은 한쪽 행으로만 움직임 가능
+		if ((team == Team::White && row < m_rowIndex) ||
+			(team == Team::Black && row > m_rowIndex)) {
+			retVal = true;
+		}
+	}
+	else{
+		if (move == Move::STRAIGHT) {
+			if (unit == Unit::Rook || unit == Unit::King || unit == Unit::Queen) {
+				retVal = true;
+			}
+		}
+		else {
+			if (unit == Unit::Bishop || unit == Unit::King || unit == Unit::Queen) {
+				retVal = true;
+			}
 		}
 	}
 
-	return retVal;
-}
-
-bool CSpace::rookMove() {
-	bool retVal = false;
-	int canStrMove = 7;
-
-	retVal = straightMove(canStrMove);
-
-	return retVal;
-}
-
-bool CSpace::knightMove() {
-	bool retVal = false;
-	int prevRow = 0;
-	int prevCol = 0;
-
-	CPrevClickData& prevData = CPrevClickData::getInstance();
-	prevData.getPrevRowIndex(prevRow);
-	prevData.getPrevColIndex(prevCol);
-
-	if ((std::abs(prevRow - m_rowIndex) == 2 && std::abs(prevCol - m_colIndex) == 1) ||
-		(std::abs(prevRow - m_rowIndex) == 1 && std::abs(prevCol - m_colIndex) == 2)) {
-		retVal = true;
-	}
-
-	return retVal;
-}
-
-bool CSpace::bishopMove() {
-	bool retVal = false;
-	int canMove = 7;
-
-	retVal = diagonalMove(canMove);
-
-	return retVal;
-}
-
-bool CSpace::queenMove() {
-	bool retVal = false;
-	int canMove = 7;
-	int prevRow = 0;
-	int prevCol = 0;
-
-	CPrevClickData& prevData = CPrevClickData::getInstance();
-	prevData.getPrevRowIndex(prevRow);
-	prevData.getPrevColIndex(prevCol);
-
-	if (prevRow != m_rowIndex && prevCol != m_colIndex) {
-		retVal = diagonalMove(canMove);
-	}
-	else {
-		retVal = straightMove(canMove);
-	}
-
-	return retVal;
-}
-
-bool CSpace::kingMove() {
-	bool retVal = false;
-	int canMove = 1;
-	int prevRow = 0;
-	int prevCol = 0;
-
-	CPrevClickData& prevData = CPrevClickData::getInstance();
-	prevData.getPrevRowIndex(prevRow);
-	prevData.getPrevColIndex(prevCol);
-
-	if (prevRow != m_rowIndex && prevCol != m_colIndex) {
-		retVal = diagonalMove(canMove);
-	}
-	else {
-		retVal = straightMove(canMove);
-	}
 	return retVal;
 }
 
@@ -345,8 +286,6 @@ bool CSpace::straightMove(int canMove) {
 	else {
 		// no action
 	}
-
-	// todo: Knight는 마지막에 Row나 Col을 set해줘야 할듯..
 
 	return retVal;
 }

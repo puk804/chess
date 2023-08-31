@@ -15,13 +15,7 @@ public:
 	void changeCoorToNum(int& coor);
 	bool isValidClick(const Team turn, bool firstClick);
 	bool canMove();
-	
-	bool pawnMove();
-	bool rookMove();
-	bool knightMove();
-	bool bishopMove();
-	bool queenMove();
-	bool kingMove();
+	bool checkUnitMoveType(Team team, Unit unit, Move move, int row);
 
 	bool straightMove(int canMove);
 	bool diagonalMove(int canMove);

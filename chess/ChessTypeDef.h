@@ -10,9 +10,14 @@ enum class Unit{
 	King = 6
 };
 
-
 enum class Team {
 	None = 0,
 	White = 1,	// 체스판 위쪽 팀
 	Black = 2	// 체스판 아래쪽 팀
+};
+
+enum class Move {
+	None = 0,
+	STRAIGHT = 1,	// 체스판 위쪽 팀
+	DIAGONAL = 2	// 체스판 아래쪽 팀
 };
