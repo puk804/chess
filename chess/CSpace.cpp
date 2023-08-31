@@ -184,6 +184,17 @@ bool CSpace::rookMove() {
 
 bool CSpace::knightMove() {
 	bool retVal = false;
+	int prevRow = 0;
+	int prevCol = 0;
+
+	CPrevClickData& prevData = CPrevClickData::getInstance();
+	prevData.getPrevRowIndex(prevRow);
+	prevData.getPrevColIndex(prevCol);
+
+	if ((std::abs(prevRow - m_rowIndex) == 2 && std::abs(prevCol - m_colIndex) == 1) ||
+		(std::abs(prevRow - m_rowIndex) == 1 && std::abs(prevCol - m_colIndex) == 2)) {
+		retVal = true;
+	}
 
 	return retVal;
 }
@@ -207,7 +218,6 @@ bool CSpace::queenMove() {
 	prevData.getPrevRowIndex(prevRow);
 	prevData.getPrevColIndex(prevCol);
 
-	prevData.getPrevRowIndex(prevRow);
 	if (prevRow != m_rowIndex && prevCol != m_colIndex) {
 		retVal = diagonalMove(canMove);
 	}
@@ -228,7 +238,6 @@ bool CSpace::kingMove() {
 	prevData.getPrevRowIndex(prevRow);
 	prevData.getPrevColIndex(prevCol);
 
-	prevData.getPrevRowIndex(prevRow);
 	if (prevRow != m_rowIndex && prevCol != m_colIndex) {
 		retVal = diagonalMove(canMove);
 	}
