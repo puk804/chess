@@ -8,6 +8,8 @@
 #include "chessDlg.h"
 #include "afxdialogex.h"
 
+#include "defValue.h"
+
 
 #ifdef _DEBUG
 #define new DEBUG_NEW
@@ -169,15 +171,15 @@ void CchessDlg::OnPaint()
 				for (int j = 0; j < 8; ++j) {
 					m_spaceNum[i][j] = CSpace(i, j, x, y, count);
 					if (drawBlack) {
-						dc.FillSolidRect(CRect(x, y, x + 40, y + 40), RGB(163, 121, 89));	// 어두운 공간
+						dc.FillSolidRect(CRect(x, y, x + SPACE_BOARD_SIZE, y + SPACE_BOARD_SIZE), RGB_BLACK_SPACE);	// 어두운 공간
 						m_isWhiteSpace[i][j] = false;
 					}
 					else {
-						dc.FillSolidRect(CRect(x, y, x + 40, y + 40), RGB(246, 230, 198));	// 밝은 공간
+						dc.FillSolidRect(CRect(x, y, x + SPACE_BOARD_SIZE, y + SPACE_BOARD_SIZE), RGB_WHITE_SPACE);	// 밝은 공간
 						m_isWhiteSpace[i][j] = true;
 					}
 					firstUnitSetting(&dc, x, y, i, j);
-					drawSquareLine(&dc, x, y);
+					drawSquareLine(&dc, x, y, SPACE_BOARD_SIZE);
 
 					x += 40;
 					count++;
@@ -187,10 +189,18 @@ void CchessDlg::OnPaint()
 				x = 10;
 				drawBlack = !drawBlack;
 			}
+			// 클릭한 유닛 나오는 공간 그리기
+			dc.FillSolidRect(CRect(COOR_SIDE_START_X, COOR_SIDE_START_Y, COOR_SIDE_START_X + SPACE_SIDE_SIZE, COOR_SIDE_START_Y + SPACE_SIDE_SIZE), RGB_WHITE);
+			drawSquareLine(&dc, COOR_SIDE_START_X, COOR_SIDE_START_Y, SPACE_SIDE_SIZE);		
+
+			// 텍스트 출력
+			CString strTurn = _T(STR_WHITE_TURN); // 출력할 문자열
+			dc.TextOut(COOR_TURN_X, COOR_TURN_Y, strTurn);
 
 			m_isFirstPaint = false;
 			CDialogEx::OnPaint();
 		}
+
 		else {
 			if (!m_isFirstClick) {		// 첫번째 클릭 (아래에서 업데이트 후 paint 하는거라 반대임)
 
@@ -198,33 +208,50 @@ void CchessDlg::OnPaint()
 				m_prevY = m_prevSpace.m_yStart;
 				m_preSpaceNum = m_prevSpace.m_spaceNum;
 
-				dc.FillSolidRect(CRect(m_prevX, m_prevY, m_prevX + 40, m_prevY + 40), RGB(220, 0, 0));
+				dc.FillSolidRect(CRect(m_prevX, m_prevY, m_prevX + SPACE_BOARD_SIZE, m_prevY + SPACE_BOARD_SIZE), RGB_RED);
 
-				drawUnit(&dc, m_nowSpace.m_xStart, m_nowSpace.m_yStart, m_prevSpace.m_team, m_prevSpace.m_unit);
+				drawUnit(&dc, m_nowSpace.m_xStart, m_nowSpace.m_yStart, m_prevSpace.m_team, m_prevSpace.m_unit, SPACE_BOARD_SIZE);
 
-				drawSquareLine(&dc, m_prevX, m_prevY);
+				drawSquareLine(&dc, m_prevX, m_prevY, SPACE_BOARD_SIZE);
+
+				dc.FillSolidRect(CRect(COOR_SIDE_START_X, COOR_SIDE_START_Y, COOR_SIDE_START_X + SPACE_SIDE_SIZE, COOR_SIDE_START_Y + SPACE_SIDE_SIZE), RGB_WHITE);
+				drawSquareLine(&dc, COOR_SIDE_START_X, COOR_SIDE_START_Y, SPACE_SIDE_SIZE);
+				drawUnit(&dc, COOR_SIDE_START_X, COOR_SIDE_START_Y, m_prevSpace.m_team, m_prevSpace.m_unit, SPACE_SIDE_SIZE);
 
 				CDialogEx::OnPaint();
 			}
 			else {						// 두번째 클릭
 				if (m_isWhiteSpace[m_prevSpace.m_rowIndex][m_prevSpace.m_colIndex]) {	// 이전 클릭 공간이 밝은색
-					dc.FillSolidRect(CRect(m_prevX, m_prevY, m_prevX + 40, m_prevY + 40), RGB(246, 230, 198));
+					dc.FillSolidRect(CRect(m_prevX, m_prevY, m_prevX + SPACE_BOARD_SIZE, m_prevY + SPACE_BOARD_SIZE), RGB_WHITE_SPACE);
 				}
 				else {																	// 이전 클릭 공간이 어두운색
-					dc.FillSolidRect(CRect(m_prevX, m_prevY, m_prevX + 40, m_prevY + 40), RGB(163, 121, 89));
+					dc.FillSolidRect(CRect(m_prevX, m_prevY, m_prevX + SPACE_BOARD_SIZE, m_prevY + SPACE_BOARD_SIZE), RGB_BLACK_SPACE);
 				}
 
 				if (m_isWhiteSpace[m_nowSpace.m_rowIndex][m_nowSpace.m_colIndex]) {		// 현재 클릭 공간이 밝은색
-					dc.FillSolidRect(CRect(m_nowSpace.m_xStart, m_nowSpace.m_yStart, m_nowSpace.m_xStart + 40, m_nowSpace.m_yStart + 40), RGB(246, 230, 198));
+					dc.FillSolidRect(CRect(m_nowSpace.m_xStart, m_nowSpace.m_yStart, m_nowSpace.m_xStart + SPACE_BOARD_SIZE, m_nowSpace.m_yStart + SPACE_BOARD_SIZE), RGB_WHITE_SPACE);
 				}
 				else {																	// 현재 클릭 공간이 어두운색
-					dc.FillSolidRect(CRect(m_nowSpace.m_xStart, m_nowSpace.m_yStart, m_nowSpace.m_xStart + 40, m_nowSpace.m_yStart + 40), RGB(163, 121, 89));
+					dc.FillSolidRect(CRect(m_nowSpace.m_xStart, m_nowSpace.m_yStart, m_nowSpace.m_xStart + SPACE_BOARD_SIZE, m_nowSpace.m_yStart + SPACE_BOARD_SIZE), RGB_BLACK_SPACE);
 				}
 
-				drawUnit(&dc, m_nowSpace.m_xStart, m_nowSpace.m_yStart, m_prevSpace.m_team, m_prevSpace.m_unit);
+				drawUnit(&dc, m_nowSpace.m_xStart, m_nowSpace.m_yStart, m_prevSpace.m_team, m_prevSpace.m_unit, SPACE_BOARD_SIZE);
 
-				drawSquareLine(&dc, m_prevX, m_prevY);
-				drawSquareLine(&dc, m_nowSpace.m_xStart, m_nowSpace.m_yStart);
+				drawSquareLine(&dc, m_prevX, m_prevY, SPACE_BOARD_SIZE);
+				drawSquareLine(&dc, m_nowSpace.m_xStart, m_nowSpace.m_yStart, SPACE_BOARD_SIZE);
+
+				dc.FillSolidRect(CRect(COOR_SIDE_START_X, COOR_SIDE_START_Y, COOR_SIDE_START_X + SPACE_SIDE_SIZE, COOR_SIDE_START_Y + SPACE_SIDE_SIZE), RGB_WHITE);
+				drawSquareLine(&dc, COOR_SIDE_START_X, COOR_SIDE_START_Y, SPACE_SIDE_SIZE);
+
+				// 텍스트 출력
+				CString strTurn = _T(""); // 출력할 문자열
+				if (m_turn == Team::White) {
+					strTurn = _T(STR_WHITE_TURN);
+				}
+				else {
+					strTurn = _T(STR_BLACK_TURN);
+				}
+				dc.TextOut(COOR_TURN_X, COOR_TURN_Y, strTurn);
 
 				CDialogEx::OnPaint();
 			}
@@ -232,19 +259,18 @@ void CchessDlg::OnPaint()
 	}
 }
 
-void CchessDlg::drawSquareLine(CPaintDC* dc, int x, int y)
+void CchessDlg::drawSquareLine(CPaintDC* dc, int x, int y, int size)
 {
 	dc->MoveTo(x, y);
-	dc->LineTo(x + 40, y);
-	dc->LineTo(x + 40, y + 40);
-	dc->LineTo(x, y + 40);
+	dc->LineTo(x + size, y);
+	dc->LineTo(x + size, y + size);
+	dc->LineTo(x, y + size);
 	dc->LineTo(x, y);
 }
 
-void CchessDlg::drawUnit(CPaintDC* dc, int x, int y, Team team, Unit unit)
+void CchessDlg::drawUnit(CPaintDC* dc, int x, int y, Team team, Unit unit, int size)
 {
 	CImage pngImage;
-	CRect rct = CRect(10, 10, 50, 50);
 	CString fname;
 
 	std::string imgPath = "res/unit/";
@@ -265,7 +291,7 @@ void CchessDlg::drawUnit(CPaintDC* dc, int x, int y, Team team, Unit unit)
 
 	if (SUCCEEDED(pngImage.Load(fname))) // SUCCEEDED 매크로로 로드 성공 여부 확인
 	{
-		pngImage.Draw(dc->GetSafeHdc(), x, y, rct.Width(), rct.Height());
+		pngImage.Draw(dc->GetSafeHdc(), x, y, size, size);
 	}
 }
 
@@ -295,7 +321,7 @@ void CchessDlg::firstUnitSetting(CPaintDC* dc, int x, int y, int row, int col)
 	}
 
 	if (unit != Unit::None) {
-		drawUnit(dc, x, y, team, unit);
+		drawUnit(dc, x, y, team, unit, SPACE_BOARD_SIZE);
 	}
 }
 

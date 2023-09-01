@@ -35,8 +35,8 @@ protected:
 public:
 	afx_msg void OnLButtonDown(UINT nFlags, CPoint point);
 
-	void drawSquareLine(CPaintDC* dc, int x, int y);
-	void drawUnit(CPaintDC* dc, int x, int y, Team team, Unit unit);
+	void drawSquareLine(CPaintDC* dc, int x, int y, int size);
+	void drawUnit(CPaintDC* dc, int x, int y, Team team, Unit unit, int size);
 	void firstUnitSetting(CPaintDC* dc, int x, int y, int row, int col);
 
 

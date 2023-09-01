@@ -192,6 +192,7 @@
     <ClInclude Include="ChessTypeDef.h" />
     <ClInclude Include="CPrevClickData.h" />
     <ClInclude Include="CSpace.h" />
+    <ClInclude Include="defValue.h" />
     <ClInclude Include="framework.h" />
     <ClInclude Include="pch.h" />
     <ClInclude Include="Resource.h" />
