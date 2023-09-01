@@ -205,10 +205,6 @@ bool CSpace::straightMove(int canMove) {
 		return retVal;
 	}
 
-	if (prevRow != m_rowIndex && prevCol != m_colIndex) {	// 직선 움직임이 아닐 때
-		return retVal;
-	}
-
 	if ((std::abs(prevRow - m_rowIndex) > canMove) ||
 		((std::abs(prevCol - m_colIndex) > canMove))){		// 움직임이 가능한 칸보다 많이 움직였을 때
 		return retVal;
@@ -302,10 +298,6 @@ bool CSpace::diagonalMove(int canMove) {
 	prevData.getPrevRowIndex(prevRow);
 	prevData.getPrevColIndex(prevCol);
 	prevData.getPrevUnit(prevUnit);
-
-	if (std::abs(prevRow - m_rowIndex) != std::abs(prevCol - m_colIndex)) {	// 대각선 움직임이 아닐 때
-		return retVal;
-	}
 
 	if (std::abs(prevRow - m_rowIndex) > canMove) {		// 움직임이 가능한 칸보다 많이 움직였을 때
 		return retVal;
