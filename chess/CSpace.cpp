@@ -188,6 +188,55 @@ bool CSpace::checkUnitMoveType(Team team, Unit unit, Move move, int row){
 	return retVal;
 }
 
+bool CSpace::UnitMove(Unit unit, int start, int end, int rowIndexPlus, int colIndexPlus, bool isRowMove) {
+	bool retVal = false;
+	bool isExist = false;
+	int beforeEndIndex = end;
+
+	CPrevClickData& prevData = CPrevClickData::getInstance();
+
+	isRowMove ? beforeEndIndex += rowIndexPlus : beforeEndIndex += colIndexPlus;
+
+	for (start; start != beforeEndIndex;) {
+		if (isRowMove) {
+			start += rowIndexPlus;
+			end += colIndexPlus;
+			prevData.getisExist(start, end, isExist);
+		}
+		else {
+			start += colIndexPlus;
+			end += rowIndexPlus;
+			prevData.getisExist(end, start, isExist);
+		}
+
+		if (start == end) {		// 마지막 이동 지점이면 상대 기물이 있어도 이동 가능 (Pawn 제외)
+			if (unit != Unit::Pawn || (unit == Unit::Pawn && isExist == false)) {
+				retVal = true;
+			}
+		}
+		else {
+			if (isExist == true) {
+				retVal = false;
+				break;
+			}
+		}
+
+		// 증감식
+		if (isRowMove) {
+			start += rowIndexPlus;
+			end += colIndexPlus;
+			prevData.getisExist(start, end, isExist);
+		}
+		else {
+			start += colIndexPlus;
+			end += rowIndexPlus;
+			prevData.getisExist(end, start, isExist);
+		}
+	}
+	
+	return retVal;
+}
+
 bool CSpace::straightMove(int canMove) {
 	bool retVal = false;
 	bool isExist = false;
@@ -213,71 +262,77 @@ bool CSpace::straightMove(int canMove) {
 	// todo: 아래부분 함수 포인터 사용 가능할듯..
 	if (prevRow > m_rowIndex) {		// 위로 이동하는 경우
 		--prevRow;					// 다음 칸부터 검사
-		for (prevRow; prevRow != m_rowIndex-1; --prevRow) {
-			prevData.getisExist(prevRow, prevCol, isExist);
-			if (prevRow == m_rowIndex) {		// 마지막 이동 지점이면 상대 기물이 있어도 이동 가능 (Pawn 제외)
-				if (prevUnit != Unit::Pawn || (prevUnit == Unit::Pawn && isExist == false)) {
-					retVal = true;
-				}
-			}
-			else {
-				if (isExist == true) {
-					retVal = false;
-					break;
-				}
-			}
-		}
+		retVal = UnitMove(m_unit, prevRow, m_rowIndex, -1, 0, true);
+		//for (prevRow; prevRow != m_rowIndex-1; --prevRow) {
+		//	prevData.getisExist(prevRow, prevCol, isExist);
+		//	if (prevRow == m_rowIndex) {		// 마지막 이동 지점이면 상대 기물이 있어도 이동 가능 (Pawn 제외)
+		//		if (prevUnit != Unit::Pawn || (prevUnit == Unit::Pawn && isExist == false)) {
+		//			retVal = true;
+		//		}
+		//	}
+		//	else {
+		//		if (isExist == true) {
+		//			retVal = false;
+		//			break;
+		//		}
+		//	}
+		//}
 	}
 	else if (prevRow < m_rowIndex){	// 아래로 이동하는 경우
 		++prevRow;					// 다음 칸부터 검사
-		for (prevRow; prevRow != m_rowIndex+1; ++prevRow) {
-			prevData.getisExist(prevRow, prevCol, isExist);
-			if (prevRow == m_rowIndex) {		// 마지막 이동 지점이면 상대 기물이 있어도 이동 가능 (Pawn 제외)
-				if (prevUnit != Unit::Pawn || (prevUnit == Unit::Pawn && isExist == false)) {
-					retVal = true;
-				}
-			}
-			else {
-				if (isExist == true) {
-					retVal = false;
-					break;
-				}
-			}
-		}
+		retVal = UnitMove(m_unit, prevRow, m_rowIndex, 1, 0, true);
+		//for (prevRow; prevRow != m_rowIndex+1; ++prevRow) {
+		//	prevData.getisExist(prevRow, prevCol, isExist);
+		//	if (prevRow == m_rowIndex) {		// 마지막 이동 지점이면 상대 기물이 있어도 이동 가능 (Pawn 제외)
+		//		if (prevUnit != Unit::Pawn || (prevUnit == Unit::Pawn && isExist == false)) {
+		//			retVal = true;
+		//		}
+		//	}
+		//	else {
+		//		if (isExist == true) {
+		//			retVal = false;
+		//			break;
+		//		}
+		//	}
+		//}
 	}
 	else if (prevCol > m_colIndex) {	// 왼쪽으로 이동하는 경우
 		--prevCol;						// 다음 칸부터 검사
-		for (prevCol; prevCol != m_colIndex-1; --prevCol) {
-			prevData.getisExist(prevRow, prevCol, isExist);
-			if (prevCol == m_colIndex) {		// 마지막 이동 지점이면 상대 기물이 있어도 이동 가능 (Pawn 제외)
-				if (prevUnit != Unit::Pawn || (prevUnit == Unit::Pawn && isExist == false)) {
-					retVal = true;
-				}
-			}
-			else {
-				if (isExist == true) {
-					retVal = false;
-					break;
-				}
-			}
-		}
+		retVal = UnitMove(m_unit, prevCol, m_colIndex, 0, -1, false);
+
+		//for (prevCol; prevCol != m_colIndex-1; --prevCol) {
+		//	prevData.getisExist(prevRow, prevCol, isExist);
+		//	if (prevCol == m_colIndex) {		// 마지막 이동 지점이면 상대 기물이 있어도 이동 가능 (Pawn 제외)
+		//		if (prevUnit != Unit::Pawn || (prevUnit == Unit::Pawn && isExist == false)) {
+		//			retVal = true;
+		//		}
+		//	}
+		//	else {
+		//		if (isExist == true) {
+		//			retVal = false;
+		//			break;
+		//		}
+		//	}
+		//}
 	}
 	else if (prevCol < m_colIndex) {	// 오른쪽으로 이동하는 경우
 		++prevCol;						// 다음 칸부터 검사
-		for (prevCol; prevCol != m_colIndex+1; ++prevCol) {
-			prevData.getisExist(prevRow, prevCol, isExist);
-			if (prevCol == m_colIndex) {		// 마지막 이동 지점이면 상대 기물이 있어도 이동 가능 (Pawn 제외)
-				if (prevUnit != Unit::Pawn || (prevUnit == Unit::Pawn && isExist == false)) {
-					retVal = true;
-				}
-			}
-			else {
-				if (isExist == true) {
-					retVal = false;
-					break;
-				}
-			}
-		}
+		retVal = UnitMove(m_unit, prevCol, m_colIndex, 0, 1, false);
+
+		//for (prevCol; prevCol != m_colIndex+1; ++prevCol) {
+		//	prevData.getisExist(prevRow, prevCol, isExist);
+		//	if (prevCol == m_colIndex) {		// 마지막 이동 지점이면 상대 기물이 있어도 이동 가능 (Pawn 제외)
+		//		if (prevUnit != Unit::Pawn || (prevUnit == Unit::Pawn && isExist == false)) {
+		//			retVal = true;
+		//		}
+		//	}
+		//	else {
+		//		if (isExist == true) {
+		//			retVal = false;
+		//			break;
+		//		}
+		//	}
+		//}
 	}
 	else {
 		// no action

@@ -17,6 +17,7 @@ public:
 	bool canMove();
 	bool checkUnitMoveType(Team team, Unit unit, Move move, int row);
 
+	bool UnitMove(Unit unit, int start, int end, int rowIndexPlus, int colIndexPlus, bool isRowMove);
 	bool straightMove(int canMove);
 	bool diagonalMove(int canMove);
 
