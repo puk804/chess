@@ -39,6 +39,8 @@ public:
 	void drawUnit(CPaintDC* dc, int x, int y, Team team, Unit unit, int size);
 	void firstUnitSetting(CPaintDC* dc, int x, int y, int row, int col);
 
+	void reGame();
+
 
 public:
 	CSpace m_spaceNum[8][8];
@@ -56,4 +58,5 @@ public:
 	int m_gameEnd;
 
 	std::map<Unit, std::string> m_unitToString;
+	afx_msg void OnBnClickedMfcbutton3();
 };

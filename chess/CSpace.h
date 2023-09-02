@@ -6,6 +6,7 @@ class CSpace
 public:
 	CSpace();
 	CSpace(int i, int j, int x, int y, int spaceNum);
+	void reGame();
 	void unitClear();
 
 

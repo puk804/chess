@@ -23,5 +23,5 @@
 // string
 #define STR_WHITE_TURN " White Turn "
 #define STR_BLACK_TURN " Black Turn " 
-#define STR_WHITE_WIN " Black team WIN ! " 
+#define STR_WHITE_WIN " White team WIN ! " 
 #define STR_BLACK_WIN " Black team WIN ! " 

@@ -49,6 +49,11 @@ CSpace::CSpace(int i, int j, int x, int y, int spaceNum) {
 	}
 }
 
+void CSpace::reGame()
+{
+	CPrevClickData::getInstance().reGame();
+}
+
 void CSpace::unitClear() {
 	m_isValid = false;
 	m_team = Team::None;

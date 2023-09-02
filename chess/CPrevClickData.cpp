@@ -28,6 +28,25 @@ CPrevClickData& CPrevClickData::getInstance(){
 	return instance;
 }
 
+void CPrevClickData::reGame()
+{
+	m_prevTeam = Team::None;
+	m_prevUnit = Unit::None;
+	m_prevRowIndex = 0;
+	m_prevColIndex = 0;
+
+	for (int i = 0; i < 8; ++i) {
+		for (int j = 0; j < 8; ++j) {
+			if (i < 2 || i > 5) {
+				m_isExist[i][j] = true;
+			}
+			else {
+				m_isExist[i][j] = false;
+			}
+		}
+	}
+}
+
 void CPrevClickData::setPrevTeam(Team team){
 	m_prevTeam = team;
 }

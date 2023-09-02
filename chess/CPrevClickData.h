@@ -10,6 +10,8 @@ private:
 public:
 	static CPrevClickData& getInstance();
 
+	void reGame();
+
 	void setPrevTeam(Team team);
 	void getPrevTeam(Team &team);
 	
