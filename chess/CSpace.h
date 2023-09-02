@@ -6,7 +6,6 @@ class CSpace
 public:
 	CSpace();
 	CSpace(int i, int j, int x, int y, int spaceNum);
-	CSpace(const CSpace& prevSpace);
 	void unitClear();
 
 
@@ -17,7 +16,7 @@ public:
 	bool canMove();
 	bool checkUnitMoveType(Team team, Unit unit, Move move, int row);
 
-	bool UnitMove(Unit unit, int start, int end, int rowIndexPlus, int colIndexPlus, bool isRowMove);
+	bool UnitMove(Unit unit, Move moveType, int start, int end, int rowIndexPlus, int colIndexPlus, int otherCoor, bool isRowMove = true);
 	bool straightMove(int canMove);
 	bool diagonalMove(int canMove);
 

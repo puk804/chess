@@ -334,7 +334,7 @@ HCURSOR CchessDlg::OnQueryDragIcon()
 
 void CchessDlg::OnLButtonDown(UINT nFlags, CPoint point)
 {
-	if ((point.x < 330 && point.x >= 10) && (point.y < 330 && point.x >= 10)) {
+	if ((point.x < 330 && point.x >= 10) && (point.y < 330 && point.x >= 10)) {		// 체스판 범위를 클릭했을 때
 		int x = point.y;
 		int y = point.x;
 		CSpace().getSpaceIndex(x, y);		// todo: 함수 정의위치 바꾸기
@@ -348,7 +348,6 @@ void CchessDlg::OnLButtonDown(UINT nFlags, CPoint point)
 					int prevX = m_prevSpace.m_rowIndex;
 					int prevY = m_prevSpace.m_colIndex;
 
-					// todo: 복사생성자로 어떻게 안 될까?
 					m_spaceNum[x][y].m_isValid = m_spaceNum[prevX][prevY].m_isValid;
 					m_spaceNum[x][y].m_team = m_spaceNum[prevX][prevY].m_team;
 					m_spaceNum[x][y].m_unit = m_spaceNum[prevX][prevY].m_unit;
