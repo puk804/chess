@@ -53,5 +53,7 @@ public:
 	int m_prevY;
 	int m_preSpaceNum;
 
+	int m_gameEnd;
+
 	std::map<Unit, std::string> m_unitToString;
 };

@@ -109,6 +109,7 @@ BOOL CchessDlg::OnInitDialog()
 	m_isFirstPaint = true;
 	m_prevSpace = CSpace();
 	m_turn = Team::White;
+	m_gameEnd = false;
 
 	m_unitToString = {
 		{Unit::Pawn, "pawn"},
@@ -202,56 +203,74 @@ void CchessDlg::OnPaint()
 		}
 
 		else {
-			if (!m_isFirstClick) {		// 첫번째 클릭 (아래에서 업데이트 후 paint 하는거라 반대임)
+			if (!m_gameEnd) {
+				if (!m_isFirstClick) {		// 첫번째 클릭 (아래에서 업데이트 후 paint 하는거라 반대임)
 
-				m_prevX = m_prevSpace.m_xStart;
-				m_prevY = m_prevSpace.m_yStart;
-				m_preSpaceNum = m_prevSpace.m_spaceNum;
+					m_prevX = m_prevSpace.m_xStart;
+					m_prevY = m_prevSpace.m_yStart;
+					m_preSpaceNum = m_prevSpace.m_spaceNum;
 
-				dc.FillSolidRect(CRect(m_prevX, m_prevY, m_prevX + SPACE_BOARD_SIZE, m_prevY + SPACE_BOARD_SIZE), RGB_RED);
+					dc.FillSolidRect(CRect(m_prevX, m_prevY, m_prevX + SPACE_BOARD_SIZE, m_prevY + SPACE_BOARD_SIZE), RGB_RED);
 
-				drawUnit(&dc, m_nowSpace.m_xStart, m_nowSpace.m_yStart, m_prevSpace.m_team, m_prevSpace.m_unit, SPACE_BOARD_SIZE);
+					drawUnit(&dc, m_nowSpace.m_xStart, m_nowSpace.m_yStart, m_prevSpace.m_team, m_prevSpace.m_unit, SPACE_BOARD_SIZE);
 
-				drawSquareLine(&dc, m_prevX, m_prevY, SPACE_BOARD_SIZE);
+					drawSquareLine(&dc, m_prevX, m_prevY, SPACE_BOARD_SIZE);
 
-				dc.FillSolidRect(CRect(COOR_SIDE_START_X, COOR_SIDE_START_Y, COOR_SIDE_START_X + SPACE_SIDE_SIZE, COOR_SIDE_START_Y + SPACE_SIDE_SIZE), RGB_WHITE);
-				drawSquareLine(&dc, COOR_SIDE_START_X, COOR_SIDE_START_Y, SPACE_SIDE_SIZE);
-				drawUnit(&dc, COOR_SIDE_START_X, COOR_SIDE_START_Y, m_prevSpace.m_team, m_prevSpace.m_unit, SPACE_SIDE_SIZE);
+					dc.FillSolidRect(CRect(COOR_SIDE_START_X, COOR_SIDE_START_Y, COOR_SIDE_START_X + SPACE_SIDE_SIZE, COOR_SIDE_START_Y + SPACE_SIDE_SIZE), RGB_WHITE);
+					drawSquareLine(&dc, COOR_SIDE_START_X, COOR_SIDE_START_Y, SPACE_SIDE_SIZE);
+					drawUnit(&dc, COOR_SIDE_START_X, COOR_SIDE_START_Y, m_prevSpace.m_team, m_prevSpace.m_unit, SPACE_SIDE_SIZE);
 
-				CDialogEx::OnPaint();
+					CDialogEx::OnPaint();
+				}
+				else {						// 두번째 클릭
+					if (m_isWhiteSpace[m_prevSpace.m_rowIndex][m_prevSpace.m_colIndex]) {	// 이전 클릭 공간이 밝은색
+						dc.FillSolidRect(CRect(m_prevX, m_prevY, m_prevX + SPACE_BOARD_SIZE, m_prevY + SPACE_BOARD_SIZE), RGB_WHITE_SPACE);
+					}
+					else {																	// 이전 클릭 공간이 어두운색
+						dc.FillSolidRect(CRect(m_prevX, m_prevY, m_prevX + SPACE_BOARD_SIZE, m_prevY + SPACE_BOARD_SIZE), RGB_BLACK_SPACE);
+					}
+
+					if (m_isWhiteSpace[m_nowSpace.m_rowIndex][m_nowSpace.m_colIndex]) {		// 현재 클릭 공간이 밝은색
+						dc.FillSolidRect(CRect(m_nowSpace.m_xStart, m_nowSpace.m_yStart, m_nowSpace.m_xStart + SPACE_BOARD_SIZE, m_nowSpace.m_yStart + SPACE_BOARD_SIZE), RGB_WHITE_SPACE);
+					}
+					else {																	// 현재 클릭 공간이 어두운색
+						dc.FillSolidRect(CRect(m_nowSpace.m_xStart, m_nowSpace.m_yStart, m_nowSpace.m_xStart + SPACE_BOARD_SIZE, m_nowSpace.m_yStart + SPACE_BOARD_SIZE), RGB_BLACK_SPACE);
+					}
+
+					drawUnit(&dc, m_nowSpace.m_xStart, m_nowSpace.m_yStart, m_prevSpace.m_team, m_prevSpace.m_unit, SPACE_BOARD_SIZE);
+
+					drawSquareLine(&dc, m_prevX, m_prevY, SPACE_BOARD_SIZE);
+					drawSquareLine(&dc, m_nowSpace.m_xStart, m_nowSpace.m_yStart, SPACE_BOARD_SIZE);
+
+					dc.FillSolidRect(CRect(COOR_SIDE_START_X, COOR_SIDE_START_Y, COOR_SIDE_START_X + SPACE_SIDE_SIZE, COOR_SIDE_START_Y + SPACE_SIDE_SIZE), RGB_WHITE);
+					drawSquareLine(&dc, COOR_SIDE_START_X, COOR_SIDE_START_Y, SPACE_SIDE_SIZE);
+
+					// 텍스트 출력
+					CString strTurn = _T(""); // 출력할 문자열
+					if (m_turn == Team::White) {
+						strTurn = _T(STR_WHITE_TURN);
+					}
+					else {
+						strTurn = _T(STR_BLACK_TURN);
+					}
+					dc.TextOut(COOR_TURN_X, COOR_TURN_Y, strTurn);
+
+					CDialogEx::OnPaint();
+				}
 			}
-			else {						// 두번째 클릭
-				if (m_isWhiteSpace[m_prevSpace.m_rowIndex][m_prevSpace.m_colIndex]) {	// 이전 클릭 공간이 밝은색
-					dc.FillSolidRect(CRect(m_prevX, m_prevY, m_prevX + SPACE_BOARD_SIZE, m_prevY + SPACE_BOARD_SIZE), RGB_WHITE_SPACE);
-				}
-				else {																	// 이전 클릭 공간이 어두운색
-					dc.FillSolidRect(CRect(m_prevX, m_prevY, m_prevX + SPACE_BOARD_SIZE, m_prevY + SPACE_BOARD_SIZE), RGB_BLACK_SPACE);
-				}
-
-				if (m_isWhiteSpace[m_nowSpace.m_rowIndex][m_nowSpace.m_colIndex]) {		// 현재 클릭 공간이 밝은색
-					dc.FillSolidRect(CRect(m_nowSpace.m_xStart, m_nowSpace.m_yStart, m_nowSpace.m_xStart + SPACE_BOARD_SIZE, m_nowSpace.m_yStart + SPACE_BOARD_SIZE), RGB_WHITE_SPACE);
-				}
-				else {																	// 현재 클릭 공간이 어두운색
-					dc.FillSolidRect(CRect(m_nowSpace.m_xStart, m_nowSpace.m_yStart, m_nowSpace.m_xStart + SPACE_BOARD_SIZE, m_nowSpace.m_yStart + SPACE_BOARD_SIZE), RGB_BLACK_SPACE);
-				}
-
-				drawUnit(&dc, m_nowSpace.m_xStart, m_nowSpace.m_yStart, m_prevSpace.m_team, m_prevSpace.m_unit, SPACE_BOARD_SIZE);
-
-				drawSquareLine(&dc, m_prevX, m_prevY, SPACE_BOARD_SIZE);
-				drawSquareLine(&dc, m_nowSpace.m_xStart, m_nowSpace.m_yStart, SPACE_BOARD_SIZE);
-
-				dc.FillSolidRect(CRect(COOR_SIDE_START_X, COOR_SIDE_START_Y, COOR_SIDE_START_X + SPACE_SIDE_SIZE, COOR_SIDE_START_Y + SPACE_SIDE_SIZE), RGB_WHITE);
-				drawSquareLine(&dc, COOR_SIDE_START_X, COOR_SIDE_START_Y, SPACE_SIDE_SIZE);
+			else {
+				// 오른쪽 유닛 크게보기 공간 덮기 (테두리 덮기 위해 +1 추가)
+				dc.FillSolidRect(CRect(COOR_SIDE_START_X, COOR_TURN_Y, COOR_SIDE_START_X + SPACE_SIDE_SIZE +1, COOR_SIDE_START_Y + SPACE_SIDE_SIZE + 1), RGB_BASE);
 
 				// 텍스트 출력
 				CString strTurn = _T(""); // 출력할 문자열
 				if (m_turn == Team::White) {
-					strTurn = _T(STR_WHITE_TURN);
+					strTurn = _T(STR_BLACK_WIN);
 				}
 				else {
-					strTurn = _T(STR_BLACK_TURN);
+					strTurn = _T(STR_WHITE_WIN);
 				}
-				dc.TextOut(COOR_TURN_X, COOR_TURN_Y, strTurn);
+				dc.TextOut(COOR_END_X, COOR_END_Y, strTurn);
 
 				CDialogEx::OnPaint();
 			}
@@ -334,6 +353,10 @@ HCURSOR CchessDlg::OnQueryDragIcon()
 
 void CchessDlg::OnLButtonDown(UINT nFlags, CPoint point)
 {
+	if (m_gameEnd) {
+		return;
+	}
+
 	if ((point.x < 330 && point.x >= 10) && (point.y < 330 && point.x >= 10)) {		// 체스판 범위를 클릭했을 때
 		int x = point.y;
 		int y = point.x;
@@ -345,6 +368,10 @@ void CchessDlg::OnLButtonDown(UINT nFlags, CPoint point)
 			}
 			else {
 				if (m_spaceNum[x][y].m_team != m_prevSpace.m_team) {	// 똑같은곳 2번 클릭이면 무효
+					if (m_spaceNum[x][y].m_unit == Unit::King) {
+						m_gameEnd = true;
+					}
+
 					int prevX = m_prevSpace.m_rowIndex;
 					int prevY = m_prevSpace.m_colIndex;
 
